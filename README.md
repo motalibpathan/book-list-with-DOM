@@ -1,4 +1,4 @@
 # book-list-with-DOM
 Simple Book List 
-Technologies used:
+Technologies used: <br>
 HTML, CSS, Javascript DOM
