@@ -11,11 +11,11 @@ class Book {
 }
 // UI class
 class UI {
-  static addToBookList(book) {
+  static addToBookList(book, sn) {
     let list = document.querySelector("#book-list");
     let row = document.createElement("tr");
     row.innerHTML = `
-    <td></td>
+    <td>${sn}</td>
     <td>${book.title}</td>
     <td>${book.author}</td>
     <td>${book.isbn}</td>
@@ -42,13 +42,22 @@ class UI {
 
   static deleteFromBook(target) {
     if (target.innerText === "Remove") {
-      target.parentElement.parentElement.remove();
+      // target.parentElement.parentElement.remove();
       Store.removeBook(
         target.parentElement.previousElementSibling.textContent.trim()
       );
 
+      UI.updateBookToList();
+
       UI.showAlert("Book Removed", "alert-success");
     }
+  }
+  static updateBookToList() {
+    bookList.innerHTML = "";
+    let books = Store.getBooks();
+    books.forEach((book, index) => {
+      UI.addToBookList(book, index + 1);
+    });
   }
 }
 
@@ -69,12 +78,6 @@ class Store {
 
     localStorage.setItem("books", JSON.stringify(books));
   }
-  static displayBooks() {
-    let books = Store.getBooks();
-    books.forEach((book) => {
-      UI.addToBookList(book);
-    });
-  }
   static removeBook(isbn) {
     let books = this.getBooks();
 
@@ -90,7 +93,7 @@ class Store {
 // Add event listener
 form.addEventListener("submit", newBook);
 bookList.addEventListener("click", removeBook);
-document.addEventListener("DOMContentLoaded", Store.displayBooks());
+document.addEventListener("DOMContentLoaded", UI.updateBookToList());
 
 // Define function
 
@@ -104,15 +107,15 @@ function newBook(e) {
   } else {
     let book = new Book(title, author, isbn);
 
-    UI.addToBookList(book);
+    Store.addBook(book);
+
+    UI.updateBookToList();
 
     UI.clearFields();
 
     UI.showAlert("Book Added!", "alert-success");
 
     e.preventDefault();
-
-    Store.addBook(book);
   }
   e.preventDefault();
 }
